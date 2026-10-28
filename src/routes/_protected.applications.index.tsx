@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_protected/applications/")({
     ],
   }),
   component: ApplicationsPage,
-);
+});
 
 const FILTERS: { value: string; label: string }[] = [
   { value: "all", label: "All statuses" },

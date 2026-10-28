@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_protected/dashboard")({
     ],
   }),
   component: DashboardPage,
-);
+});
 
 const STATUS_ORDER: AppStatus[] = [
   "draft",

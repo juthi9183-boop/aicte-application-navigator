@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_protected/reports")({
     ],
   }),
   component: ReportsPage,
-);
+});
 
 const STATUSES = Object.keys(STATUS_META) as AppStatus[];
 
