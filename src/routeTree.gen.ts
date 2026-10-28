@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProtectedRouteImport } from './routes/_protected'
+import { Route as ProtectedApplicationsRouteImport } from './routes/_protected.applications'
+import { Route as ProtectedDashboardRouteImport } from './routes/_protected.dashboard'
+import { Route as ProtectedReportsRouteImport } from './routes/_protected.reports'
+import { Route as ProtectedApplicationsIndexRouteImport } from './routes/_protected.applications.index'
+import { Route as ProtectedApplicationsIdRouteImport } from './routes/_protected.applications.$id'
+import { Route as ProtectedApplicationsNewRouteImport } from './routes/_protected.applications.new'
+import { Route as ProtectedApplicationsIdIndexRouteImport } from './routes/_protected.applications.$id.index'
+import { Route as ProtectedApplicationsIdEditRouteImport } from './routes/_protected.applications.$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedApplicationsRoute = ProtectedApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedReportsRoute = ProtectedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedApplicationsIndexRoute =
+  ProtectedApplicationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedApplicationsRoute,
+  } as any)
+const ProtectedApplicationsIdRoute = ProtectedApplicationsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProtectedApplicationsRoute,
+} as any)
+const ProtectedApplicationsNewRoute =
+  ProtectedApplicationsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedApplicationsRoute,
+  } as any)
+const ProtectedApplicationsIdIndexRoute =
+  ProtectedApplicationsIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedApplicationsIdRoute,
+  } as any)
+const ProtectedApplicationsIdEditRoute =
+  ProtectedApplicationsIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => ProtectedApplicationsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/applications': typeof ProtectedApplicationsRouteWithChildren
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/reports': typeof ProtectedReportsRoute
+  '/applications/$id': typeof ProtectedApplicationsIdRouteWithChildren
+  '/applications/new': typeof ProtectedApplicationsNewRoute
+  '/applications/': typeof ProtectedApplicationsIndexRoute
+  '/applications/$id/edit': typeof ProtectedApplicationsIdEditRoute
+  '/applications/$id/': typeof ProtectedApplicationsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/reports': typeof ProtectedReportsRoute
+  '/applications/new': typeof ProtectedApplicationsNewRoute
+  '/applications': typeof ProtectedApplicationsIndexRoute
+  '/applications/$id/edit': typeof ProtectedApplicationsIdEditRoute
+  '/applications/$id': typeof ProtectedApplicationsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_protected': typeof ProtectedRouteWithChildren
+  '/_protected/applications': typeof ProtectedApplicationsRouteWithChildren
+  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/reports': typeof ProtectedReportsRoute
+  '/_protected/applications/$id': typeof ProtectedApplicationsIdRouteWithChildren
+  '/_protected/applications/new': typeof ProtectedApplicationsNewRoute
+  '/_protected/applications/': typeof ProtectedApplicationsIndexRoute
+  '/_protected/applications/$id/edit': typeof ProtectedApplicationsIdEditRoute
+  '/_protected/applications/$id/': typeof ProtectedApplicationsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/applications'
+    | '/dashboard'
+    | '/reports'
+    | '/applications/$id'
+    | '/applications/new'
+    | '/applications/'
+    | '/applications/$id/edit'
+    | '/applications/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/reports'
+    | '/applications/new'
+    | '/applications'
+    | '/applications/$id/edit'
+    | '/applications/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_protected'
+    | '/_protected/applications'
+    | '/_protected/dashboard'
+    | '/_protected/reports'
+    | '/_protected/applications/$id'
+    | '/_protected/applications/new'
+    | '/_protected/applications/'
+    | '/_protected/applications/$id/edit'
+    | '/_protected/applications/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProtectedRoute: typeof ProtectedRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/applications': {
+      id: '/_protected/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof ProtectedApplicationsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard': {
+      id: '/_protected/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ProtectedDashboardRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/reports': {
+      id: '/_protected/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ProtectedReportsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/applications/': {
+      id: '/_protected/applications/'
+      path: '/'
+      fullPath: '/applications/'
+      preLoaderRoute: typeof ProtectedApplicationsIndexRouteImport
+      parentRoute: typeof ProtectedApplicationsRoute
+    }
+    '/_protected/applications/$id': {
+      id: '/_protected/applications/$id'
+      path: '/$id'
+      fullPath: '/applications/$id'
+      preLoaderRoute: typeof ProtectedApplicationsIdRouteImport
+      parentRoute: typeof ProtectedApplicationsRoute
+    }
+    '/_protected/applications/new': {
+      id: '/_protected/applications/new'
+      path: '/new'
+      fullPath: '/applications/new'
+      preLoaderRoute: typeof ProtectedApplicationsNewRouteImport
+      parentRoute: typeof ProtectedApplicationsRoute
+    }
+    '/_protected/applications/$id/': {
+      id: '/_protected/applications/$id/'
+      path: '/'
+      fullPath: '/applications/$id/'
+      preLoaderRoute: typeof ProtectedApplicationsIdIndexRouteImport
+      parentRoute: typeof ProtectedApplicationsIdRoute
+    }
+    '/_protected/applications/$id/edit': {
+      id: '/_protected/applications/$id/edit'
+      path: '/edit'
+      fullPath: '/applications/$id/edit'
+      preLoaderRoute: typeof ProtectedApplicationsIdEditRouteImport
+      parentRoute: typeof ProtectedApplicationsIdRoute
+    }
   }
 }
 
+interface ProtectedApplicationsIdRouteChildren {
+  ProtectedApplicationsIdEditRoute: typeof ProtectedApplicationsIdEditRoute
+  ProtectedApplicationsIdIndexRoute: typeof ProtectedApplicationsIdIndexRoute
+}
+
+const ProtectedApplicationsIdRouteChildren: ProtectedApplicationsIdRouteChildren =
+  {
+    ProtectedApplicationsIdEditRoute: ProtectedApplicationsIdEditRoute,
+    ProtectedApplicationsIdIndexRoute: ProtectedApplicationsIdIndexRoute,
+  }
+
+const ProtectedApplicationsIdRouteWithChildren =
+  ProtectedApplicationsIdRoute._addFileChildren(
+    ProtectedApplicationsIdRouteChildren,
+  )
+
+interface ProtectedApplicationsRouteChildren {
+  ProtectedApplicationsIdRoute: typeof ProtectedApplicationsIdRouteWithChildren
+  ProtectedApplicationsNewRoute: typeof ProtectedApplicationsNewRoute
+  ProtectedApplicationsIndexRoute: typeof ProtectedApplicationsIndexRoute
+}
+
+const ProtectedApplicationsRouteChildren: ProtectedApplicationsRouteChildren = {
+  ProtectedApplicationsIdRoute: ProtectedApplicationsIdRouteWithChildren,
+  ProtectedApplicationsNewRoute: ProtectedApplicationsNewRoute,
+  ProtectedApplicationsIndexRoute: ProtectedApplicationsIndexRoute,
+}
+
+const ProtectedApplicationsRouteWithChildren =
+  ProtectedApplicationsRoute._addFileChildren(
+    ProtectedApplicationsRouteChildren,
+  )
+
+interface ProtectedRouteChildren {
+  ProtectedApplicationsRoute: typeof ProtectedApplicationsRouteWithChildren
+  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedReportsRoute: typeof ProtectedReportsRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedApplicationsRoute: ProtectedApplicationsRouteWithChildren,
+  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedReportsRoute: ProtectedReportsRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProtectedRoute: ProtectedRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
