@@ -16,10 +16,29 @@ const MAX_FILE_KB = 2048;
 
 export type FormIntent = "draft" | "submit" | "resubmit";
 
+export interface AppFormOutput {
+  collegeName: string;
+  institutionType: Application["institutionType"];
+  applicationType: Application["applicationType"];
+  academicYear: string;
+  establishedYear: string;
+  address: string;
+  city: string;
+  district: string;
+  state: string;
+  pincode: string;
+  contactPerson: string;
+  contactEmail: string;
+  contactPhone: string;
+  courses: Course[];
+  documents: AppDoc[];
+  ownerEmail: string;
+}
+
 export interface ApplicationFormProps {
   mode: "create" | "edit";
   initial?: Application | null;
-  onSubmit: (values: Omit<Application, "id" | "status" | "createdAt" | "updatedAt">, intent: FormIntent) => void;
+  onSubmit: (values: AppFormOutput, intent: FormIntent) => void;
   onCancel: () => void;
 }
 
@@ -86,21 +105,21 @@ function fromApplication(app: Application): Values {
 function validateStep(step: number, v: Values): Record<string, string> {
   const errors: Record<string, string> = {};
   if (step === 0) {
-    if (!v.collegeName.trim()) errors.collegeName = "Institution name is required";
+    if (!v.collegeName.trim()) errors["collegeName"] = "Institution name is required";
     if (!v.establishedYear.trim() || !/^\d{4}$/.test(v.establishedYear))
-      errors.establishedYear = "Enter a 4-digit year of establishment";
-    if (!v.address.trim()) errors.address = "Address is required";
-    if (!v.city.trim()) errors.city = "City is required";
-    if (!v.district.trim()) errors.district = "District is required";
-    if (!v.state.trim()) errors.state = "State is required";
-    if (!/^\d{6}$/.test(v.pincode.trim())) errors.pincode = "PIN code must be 6 digits";
-    if (!v.contactPerson.trim()) errors.contactPerson = "Contact person is required";
-    if (!/^\S+@\S+\.\S+$/.test(v.contactEmail.trim())) errors.contactEmail = "Enter a valid email";
-    if (!/^\d{10}$/.test(v.contactPhone.trim())) errors.contactPhone = "Enter a 10-digit phone number";
+      errors["establishedYear"] = "Enter a 4-digit year of establishment";
+    if (!v.address.trim()) errors["address"] = "Address is required";
+    if (!v.city.trim()) errors["city"] = "City is required";
+    if (!v.district.trim()) errors["district"] = "District is required";
+    if (!v.state.trim()) errors["state"] = "State is required";
+    if (!/^\d{6}$/.test(v.pincode.trim())) errors["pincode"] = "PIN code must be 6 digits";
+    if (!v.contactPerson.trim()) errors["contactPerson"] = "Contact person is required";
+    if (!/^\S+@\S+\.\S+$/.test(v.contactEmail.trim())) errors["contactEmail"] = "Enter a valid email";
+    if (!/^\d{10}$/.test(v.contactPhone.trim())) errors["contactPhone"] = "Enter a 10-digit phone number";
   }
   if (step === 1) {
-    if (!v.academicYear.trim()) errors.academicYear = "Academic year is required";
-    if (v.courses.length === 0) errors.courses = "Add at least one course";
+    if (!v.academicYear.trim()) errors["academicYear"] = "Academic year is required";
+    if (v.courses.length === 0) errors["courses"] = "Add at least one course";
     v.courses.forEach((c, i) => {
       if (!c.name.trim()) errors[`course-${i}-name`] = "Course name is required";
       if (!c.intake || c.intake <= 0) errors[`course-${i}-intake`] = "Intake must be greater than 0";
@@ -202,28 +221,25 @@ export function ApplicationForm({ mode, initial, onSubmit, onCancel }: Applicati
         return;
       }
     }
-    const base = initial ?? ({} as Application);
-    onSubmit(
-      {
-        collegeName: values.collegeName.trim(),
-        institutionType: values.institutionType,
-        applicationType: values.applicationType,
-        academicYear: values.academicYear.trim(),
-        establishedYear: values.establishedYear.trim(),
-        address: values.address.trim(),
-        city: values.city.trim(),
-        district: values.district.trim(),
-        state: values.state.trim(),
-        pincode: values.pincode.trim(),
-        contactPerson: values.contactPerson.trim(),
-        contactEmail: values.contactEmail.trim(),
-        contactPhone: values.contactPhone.trim(),
-        courses: values.courses.map((c) => ({ ...c, name: c.name.trim() })),
-        documents: values.documents,
-        ownerEmail: base.ownerEmail ?? values.contactEmail.trim(),
-      },
-      intent
-    );
+    const output: AppFormOutput = {
+      collegeName: values.collegeName.trim(),
+      institutionType: values.institutionType,
+      applicationType: values.applicationType,
+      academicYear: values.academicYear.trim(),
+      establishedYear: values.establishedYear.trim(),
+      address: values.address.trim(),
+      city: values.city.trim(),
+      district: values.district.trim(),
+      state: values.state.trim(),
+      pincode: values.pincode.trim(),
+      contactPerson: values.contactPerson.trim(),
+      contactEmail: values.contactEmail.trim(),
+      contactPhone: values.contactPhone.trim(),
+      courses: values.courses.map((c) => ({ ...c, name: c.name.trim() })),
+      documents: values.documents,
+      ownerEmail: initial?.ownerEmail ?? values.contactEmail.trim(),
+    };
+    onSubmit(output, intent);
   }
 
   const fieldErr = (k: string) =>

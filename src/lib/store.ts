@@ -122,7 +122,8 @@ export function canOfficerApprove(app: Application): { ok: boolean; reasons: str
 /* ------------------------------------------------------------------ */
 
 export function pushHistory(app: Application, status: AppStatus, by: string, note?: string): StatusEvent[] {
-  return [...app.history, { status, at: new Date().toISOString(), by, note }];
+  const event: StatusEvent = note === undefined ? { status, at: new Date().toISOString(), by } : { status, at: new Date().toISOString(), by, note };
+  return [...app.history, event];
 }
 
 export function addComment(
@@ -234,7 +235,7 @@ function seedDoc(
   extracted: Record<string, string>,
   opts: { issue?: AppDoc["issue"]; uploadedAt?: string; sizeKb?: number } = {}
 ): AppDoc {
-  return {
+  const doc: AppDoc = {
     id: uid("doc"),
     type,
     name,
@@ -242,16 +243,22 @@ function seedDoc(
     mime: "application/pdf",
     uploadedAt: opts.uploadedAt ?? "2026-09-14T09:30:00.000Z",
     extracted,
-    issue: opts.issue,
   };
+  if (opts.issue) doc.issue = opts.issue;
+  return doc;
 }
 
 export function seedApplications(): Application[] {
-  const mk = (a: Omit<Application, "createdAt" | "updatedAt"> & { createdAt?: string }): Application => ({
-    createdAt: a.createdAt ?? a.submittedAt ?? a.history[0]?.at ?? "2026-09-10T09:00:00.000Z",
-    updatedAt: a.decidedAt ?? a.updatedAt,
-    ...a,
-  });
+  const mk = (
+    a: Omit<Application, "createdAt" | "updatedAt"> & { createdAt?: string }
+  ): Application => {
+    const createdAt = a.createdAt ?? a.submittedAt ?? a.history[0]?.at ?? "2026-09-10T09:00:00.000Z";
+    return {
+      ...a,
+      createdAt,
+      updatedAt: a.decidedAt ?? a.submittedAt ?? a.history[a.history.length - 1]?.at ?? createdAt,
+    };
+  };
 
   const fullDocs = (prefix: string, uploadedAt: string, opts: Partial<Record<DocType, AppDoc["issue"]>> = {}) =>
     [
